@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Web Storage</title></head>
+<body>
+
+<h2>Theme Preference</h2>
+
+<select id="theme">
+<option value="light">Light</option>
+<option value="dark">Dark</option>
+<option value="blue">Blue</option>
+</select>
+
+<select id="storage">
+<option value="local">Local Storage</option>
+<option value="session">Session Storage</option>
+</select><br><br>
+
+<button id="saveBtn">Save</button>
+<button id="removeBtn">Remove</button>
+<button id="themeButton">Toggle Theme</button>
+
+<p>Current Theme: <span id="currentTheme">LIGHT</span></p>
+<p>Storage Used: <span id="currentStorage">None</span></p>
+<p>Saved Value: <span id="savedValue">None</span></p>
+<p id="message"></p>
+
+<script>
+const theme=document.getElementById('theme'),
+storage=document.getElementById('storage'),
+current=document.getElementById('currentTheme'),
+used=document.getElementById('currentStorage'),
+saved=document.getElementById('savedValue'),
+msg=document.getElementById('message');
+
+// Apply visible theme
+function applyTheme(value){
+ document.body.className=value;
+ current.textContent=value.toUpperCase();
+ theme.value=value;
+
+ let colors={
+  light:['white','black'],
+  dark:['#111827','white'],
+  blue:['#5f49bd','white']
+ };
+
+ document.body.style.cssText=`
+ background:${colors[value][0]};
+ color:${colors[value][1]};
+ font-family:Arial;
+ padding:30px;
+ `;
+}
+
+// Select storage
+function getStore(type){
+ return type==='local'?localStorage:sessionStorage;
+}
+
+// Save preference
+function savePreference(){
+ let value=theme.value,type=storage.value,
+ store=getStore(type);
+
+ getStore(type==='local'?'session':'local').removeItem('theme');
+ getStore(type==='local'?'session':'local').removeItem('storageType');
+
+ store.setItem('theme',value);
+ store.setItem('storageType',type);
+
+ applyTheme(value);
+ used.textContent=type+' Storage';
+ saved.textContent=value;
+ msg.textContent='Preference Saved!';
+}
+
+// Load preference
+function loadPreference(){
+ let store=localStorage.getItem('theme')!==null
+ ?localStorage:sessionStorage;
+
+ let value=store.getItem('theme'),
+ type=store.getItem('storageType');
+
+ if(value && ['light','dark','blue'].includes(value)){
+  applyTheme(value);
+  storage.value=type;
+  used.textContent=type+' Storage';
+  saved.textContent=value;
+  msg.textContent='Preference Loaded!';
+ }else applyTheme('light');
+}
+
+// Remove preference
+function removePreference(){
+ localStorage.removeItem('theme');
+ localStorage.removeItem('storageType');
+ sessionStorage.removeItem('theme');
+ sessionStorage.removeItem('storageType');
+
+ applyTheme('light');
+ storage.value='local';
+ used.textContent='None';
+ saved.textContent='None';
+ msg.textContent='Preference Removed!';
+}
+
+// Toggle theme
+function toggleTheme(){
+ applyTheme(document.body.className==='dark'?'light':'dark');
+}
+
+// Events
+document.getElementById('saveBtn').addEventListener('click',savePreference);
+document.getElementById('removeBtn').addEventListener('click',removePreference);
+document.getElementById('themeButton').addEventListener('click',toggleTheme);
+window.addEventListener('load',loadPreference);
+</script>
+</body>
+</html>

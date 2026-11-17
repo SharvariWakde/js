@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>JSON Data Display</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<h2>JSON Data Display</h2>
+
+<button onclick="loadWithFetch()">Load using Fetch</button>
+<button onclick="loadWithJSON()">Load using jQuery</button>
+
+<p id="output"></p>
+
+<script>
+// JSON data
+let students = [
+ {id:1,name:"tom",prn:"2407"},
+ {id:2,name:"Som",prn:"2407052"},
+ {id:3,name:"Ram",prn:"24070588"}
+];
+
+// Display data
+function displayData(data){
+ document.getElementById('output').innerHTML =
+ data.map(s=>`${s.id} - ${s.name} - ${s.prn}`).join('<br>');
+ console.table(data);
+}
+
+// Fetch method
+function loadWithFetch(){
+ let url=URL.createObjectURL(
+  new Blob([JSON.stringify(students)],{type:'application/json'})
+ );
+
+ fetch(url)
+ .then(response=>response.json())
+ .then(data=>displayData(data))
+ .catch(error=>console.log('Error:',error))
+ .finally(()=>URL.revokeObjectURL(url));
+}
+
+// jQuery method
+function loadWithJSON(){
+ let url=URL.createObjectURL(
+  new Blob([JSON.stringify(students)],{type:'application/json'})
+ );
+
+ $.getJSON(url)
+ .done(data=>displayData(data))
+ .fail(error=>console.log('Error:',error))
+ .always(()=>URL.revokeObjectURL(url));
+}
+</script>
+
+</body>
+</html>

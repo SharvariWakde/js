@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Gym Form</title></head>
+<body>
+
+<h2>Gym Admission Form</h2>
+
+<form id="gymForm">
+  <input id="name" placeholder="Full Name">
+  <span id="nameError"></span><br><br>
+
+  <input id="mobile" placeholder="Mobile Number">
+  <span id="mobileError"></span><br><br>
+
+  <input id="email" placeholder="Email">
+  <span id="emailError"></span><br><br>
+
+  <input id="age" type="number" placeholder="Age">
+  <span id="ageError"></span><br><br>
+
+  <select id="membership">
+    <option value="">Select Membership</option>
+    <option>Monthly</option>
+    <option>Quarterly</option>
+    <option>Yearly</option>
+  </select>
+  <span id="membershipError"></span><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+const form = document.getElementById('gymForm'),
+fields = [...form.querySelectorAll('input,select')];
+
+const rules = {
+ name: v => !v ? 'Name required' :
+          !/^[A-Za-z ]+$/.test(v) ? 'Letters only' : '',
+
+ mobile: v => !v ? 'Mobile required' :
+ !/^[6-9][0-9]{9}$/.test(v) ? 'Enter a valid 10-digit mobile number starting with 6, 7, 8 or 9' : '',
+
+ email: v => !v ? 'Email required' :
+           !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+           ? 'Invalid email or spaces not allowed' : '',
+
+ age: v => !v ? 'Age required' :
+         Number(v)<16 || Number(v)>70 ? 'Age must be 16-70' : '',
+
+ membership: v => !v ? 'Select a membership plan' : ''
+};
+
+// Validation function
+function validate(field) {
+ let error = rules[field.id](field.value.trim());
+
+ document.getElementById(field.id+'Error').textContent = error;
+ console.log(field.id, error || 'Valid');
+
+ return !error;
+}
+
+// Live input validation
+fields.forEach(field =>
+ field.addEventListener(
+  field.tagName==='SELECT'?'change':'input',
+  () => validate(field)
+ )
+);
+
+// Form submission
+form.addEventListener('submit', e => {
+ e.preventDefault();
+
+ if(fields.every(validate)) {
+  console.log('Admission submitted successfully!');
+  alert('Admission submitted successfully!');
+  form.reset();
+  fields.forEach(f =>
+   document.getElementById(f.id+'Error').textContent=''
+  );
+ } else {
+  console.log('Please correct the errors!');
+ }
+});
+</script>
+
+</body>
+</html>
